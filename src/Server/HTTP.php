@@ -15,10 +15,10 @@ use FastD\Http\Response;
 use FastD\Http\SwooleServerRequest;
 use FastD\Swoole\Server;
 use Psr\Http\Message\ServerRequestInterface;
-use swoole_http_request;
-use swoole_http_response;
-use swoole_http_server;
-use swoole_server;
+use Swoole\Http\Request as SwooleRequest;
+use Swoole\Http\Response as SwooleResponse;
+use Swoole\Http\Server as SwooleHttpServer;
+use Swoole\Server as SwooleServer;
 
 /**
  * Class HttpServer
@@ -32,18 +32,18 @@ abstract class HTTP extends Server
     const SCHEME = 'http';
 
     /**
-     * @return \swoole_http_server
+     * @return \Swoole\Http\Server
      */
     public function initSwoole()
     {
-        return new swoole_http_server($this->getHost(), $this->getPort());
+        return new SwooleHttpServer($this->getHost(), $this->getPort());
     }
 
     /**
-     * @param swoole_http_request $swooleRequet
-     * @param swoole_http_response $swooleResponse
+     * @param \Swoole\Http\Request $swooleRequet
+     * @param \Swoole\Http\Response $swooleResponse
      */
-    public function onRequest(swoole_http_request $swooleRequet, swoole_http_response $swooleResponse)
+    public function onRequest(SwooleRequest $swooleRequet, SwooleResponse $swooleResponse)
     {
         try {
             $swooleRequestServer = SwooleServerRequest::createServerRequestFromSwoole($swooleRequet);
@@ -62,10 +62,10 @@ abstract class HTTP extends Server
     }
 
     /**
-     * @param swoole_http_response $swooleResponse
+     * @param \Swoole\Http\Response $swooleResponse
      * @param Response $response
      */
-    protected function sendHeader(swoole_http_response $swooleResponse, Response $response)
+    protected function sendHeader(SwooleResponse $swooleResponse, Response $response)
     {
         foreach ($response->getHeaders() as $key => $header) {
             $swooleResponse->header($key, $response->getHeaderLine($key));
@@ -83,33 +83,33 @@ abstract class HTTP extends Server
     abstract public function doRequest(ServerRequestInterface $serverRequest);
 
     /**
-     * @param swoole_server $server
+     * @param \Swoole\Server $server
      * @param $data
      * @param $taskId
      * @param $workerId
      * @return mixed
      */
-    public function doTask(swoole_server $server, $data, $taskId, $workerId){}
+    public function doTask(SwooleServer $server, $data, $taskId, $workerId){}
 
     /**
-     * @param swoole_server $server
+     * @param \Swoole\Server $server
      * @param $data
      * @param $taskId
      * @return mixed
      */
-    public function doFinish(swoole_server $server, $data, $taskId){}
+    public function doFinish(SwooleServer $server, $data, $taskId){}
 
     /**
-     * @param swoole_server $server
+     * @param \Swoole\Server $server
      * @param $fd
      * @param $from_id
      */
-    public function doConnect(swoole_server $server, $fd, $from_id){}
+    public function doConnect(SwooleServer $server, $fd, $from_id){}
 
     /**
-     * @param swoole_server $server
+     * @param \Swoole\Server $server
      * @param $fd
      * @param $fromId
      */
-    public function doClose(swoole_server $server, $fd, $fromId){}
+    public function doClose(SwooleServer $server, $fd, $fromId){}
 }

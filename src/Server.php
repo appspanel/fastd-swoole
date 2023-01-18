@@ -14,11 +14,7 @@ use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use FastD\Swoole\Support\Watcher;
-use swoole_process;
-use swoole_server;
-use swoole_server_port;
-use swoole_websocket_server;
-use swoole_http_server;
+use Swoole\Server as SwooleServer;
 
 /**
  * Class Server
@@ -39,7 +35,7 @@ abstract class Server
     protected $output;
 
     /**
-     * @var swoole_server
+     * @var \Swoole\Server
      */
     protected $swoole;
 
@@ -246,7 +242,7 @@ abstract class Server
     }
 
     /**
-     * @return swoole_server
+     * @return \Swoole\Server
      */
     public function getSwoole()
     {
@@ -325,11 +321,11 @@ abstract class Server
     /**
      * 如果需要自定义自己的swoole服务器,重写此方法
      *
-     * @return swoole_server
+     * @return \Swoole\Server
      */
     public function initSwoole()
     {
-        return new swoole_server($this->host, $this->port, SWOOLE_PROCESS, $this->getSocketType());
+        return new SwooleServer($this->host, $this->port, SWOOLE_PROCESS, $this->getSocketType());
     }
 
     /**
@@ -554,10 +550,10 @@ abstract class Server
     /**
      * Base start handle. Storage process id.
      *
-     * @param swoole_server $server
+     * @param \Swoole\Server $server
      * @return void
      */
-    public function onStart(swoole_server $server)
+    public function onStart(SwooleServer $server)
     {
         if (version_compare(SWOOLE_VERSION, '1.9.5', '<')) {
             file_put_contents($this->pidFile, $server->master_pid);
@@ -578,10 +574,10 @@ abstract class Server
     /**
      * Shutdown server process.
      *
-     * @param swoole_server $server
+     * @param \Swoole\Server $server
      * @return void
      */
-    public function onShutdown(swoole_server $server)
+    public function onShutdown(SwooleServer $server)
     {
         if (file_exists($this->pidFile)) {
             unlink($this->pidFile);
@@ -591,11 +587,11 @@ abstract class Server
     }
 
     /**
-     * @param swoole_server $server
+     * @param \Swoole\Server $server
      *
      * @return void
      */
-    public function onManagerStart(swoole_server $server)
+    public function onManagerStart(SwooleServer $server)
     {
         process_rename($this->getName() . ' manager');
 
@@ -603,21 +599,21 @@ abstract class Server
     }
 
     /**
-     * @param swoole_server $server
+     * @param \Swoole\Server $server
      *
      * @return void
      */
-    public function onManagerStop(swoole_server $server)
+    public function onManagerStop(SwooleServer $server)
     {
         $this->output->writeln(sprintf('Server <info>%s</info> Manager[<info>%s</info>] is shutdown.', $this->name, $server->manager_pid), OutputInterface::VERBOSITY_DEBUG);
     }
 
     /**
-     * @param swoole_server $server
+     * @param \Swoole\Server $server
      * @param int $worker_id
      * @return void
      */
-    public function onWorkerStart(swoole_server $server, $worker_id)
+    public function onWorkerStart(SwooleServer $server, $worker_id)
     {
         $worker_name = $server->taskworker ? 'task' : 'worker';
         process_rename($this->getName() . ' ' . $worker_name);
@@ -625,72 +621,72 @@ abstract class Server
     }
 
     /**
-     * @param swoole_server $server
+     * @param \Swoole\Server $server
      * @param int $worker_id
      * @return void
      */
-    public function onWorkerStop(swoole_server $server, $worker_id)
+    public function onWorkerStop(SwooleServer $server, $worker_id)
     {
         $this->output->writeln(sprintf('Server <info>%s</info> Worker[<info>%s</info>] is shutdown', $this->name, $worker_id), OutputInterface::VERBOSITY_DEBUG);
     }
 
     /**
-     * @param swoole_server $server
+     * @param \Swoole\Server $server
      * @param $workerId
      * @param $workerPid
      * @param $code
      */
-    public function onWorkerError(swoole_server $server, $workerId, $workerPid, $code)
+    public function onWorkerError(SwooleServer $server, $workerId, $workerPid, $code)
     {
         $this->output->writeln(sprintf('Server <info>%s:%s</info> Worker[<info>%s</info>] error. Exit code: [<question>%s</question>]', $this->name, $workerPid, $workerId, $code), OutputInterface::VERBOSITY_DEBUG);
     }
 
     /**
-     * @param swoole_server $server
+     * @param \Swoole\Server $server
      * @param $taskId
      * @param $workerId
      * @param $data
      * @return mixed
      */
-    public function onTask(swoole_server $server, $taskId, $workerId, $data)
+    public function onTask(SwooleServer $server, $taskId, $workerId, $data)
     {
         return $this->doTask($server, $data, $taskId, $workerId);
     }
 
     /**
-     * @param swoole_server $server
+     * @param \Swoole\Server $server
      * @param $data
      * @param $taskId
      * @param $workerId
      * @return mixed
      */
-    abstract public function doTask(swoole_server $server, $data, $taskId, $workerId);
+    abstract public function doTask(SwooleServer $server, $data, $taskId, $workerId);
 
     /**
-     * @param swoole_server $server
+     * @param \Swoole\Server $server
      * @param $taskId
      * @param $data
      * @return mixed
      */
-    public function onFinish(swoole_server $server, $taskId, $data)
+    public function onFinish(SwooleServer $server, $taskId, $data)
     {
         return $this->doFinish($server, $data, $taskId);
     }
 
     /**
-     * @param swoole_server $server
+     * @param \Swoole\Server $server
      * @param $data
      * @param $taskId
      * @return mixed
      */
-    abstract public function doFinish(swoole_server $server, $data, $taskId);
+    abstract public function doFinish(SwooleServer $server, $data, $taskId);
 
     /**
-     * @param swoole_server $server
+     * @param \Swoole\Server $server
      * @param $fd
      * @param $from_id
      */
-    public function onConnect(swoole_server $server, $fd, $from_id)
+    public function onConnect(SwooleServer $server, $fd, $from_id)
     {
         $this->fd = $fd;
 
@@ -698,26 +694,26 @@ abstract class Server
     }
 
     /**
-     * @param swoole_server $server
+     * @param \Swoole\Server $server
      * @param $fd
      * @param $from_id
      */
-    abstract public function doConnect(swoole_server $server, $fd, $from_id);
+    abstract public function doConnect(SwooleServer $server, $fd, $from_id);
 
     /**
-     * @param swoole_server $server
+     * @param \Swoole\Server $server
      * @param $fd
      * @param $fromId
      */
-    public function onClose(swoole_server $server, $fd, $fromId)
+    public function onClose(SwooleServer $server, $fd, $fromId)
     {
         $this->doClose($server, $fd, $fromId);
     }
 
     /**
-     * @param swoole_server $server
+     * @param \Swoole\Server $server
      * @param $fd
      * @param $fromId
      */
-    abstract public function doClose(swoole_server $server, $fd, $fromId);
+    abstract public function doClose(SwooleServer $server, $fd, $fromId);
 }

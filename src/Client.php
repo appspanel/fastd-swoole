@@ -13,8 +13,8 @@ namespace FastD\Swoole;
 use FastD\Http\Cookie;
 use LogicException;
 use RuntimeException;
-use swoole_client;
-use swoole_http_client;
+use Swoole\Client as SwooleClient;
+use Swoole\Http\Client as SwooleHttpClient;
 
 /**
  * Class Client
@@ -27,7 +27,7 @@ class Client
     const USER_AGENT = 'PHP swoole/2.1 (+https://github.com/fastdlabs/swoole)';
 
     /**
-     * @var swoole_client
+     * @var \Swoole\Client
      */
     protected $client;
 
@@ -137,9 +137,9 @@ class Client
 
         // async
         if ($async && false !== strpos($this->scheme, 'http')) {
-            $this->client = new swoole_http_client($this->host, $this->port);
+            $this->client = new SwooleHttpClient($this->host, $this->port);
         } else {
-            $this->client = new swoole_client($this->socketType, $sync);
+            $this->client = new SwooleClient($this->socketType, $sync);
         }
 
         return $this;
@@ -289,35 +289,35 @@ class Client
     }
 
     /**
-     * @param swoole_client $client
+     * @param \Swoole\Client $client
      * @return mixed
      */
-    public function onConnect(swoole_client $client)
+    public function onConnect(SwooleClient $client)
     {
     }
 
     /**
-     * @param swoole_client $client
+     * @param \Swoole\Client $client
      * @param string $data
      * @return mixed
      */
-    public function onReceive(swoole_client $client, $data)
+    public function onReceive(SwooleClient $client, $data)
     {
     }
 
     /**
-     * @param swoole_client $client
+     * @param \Swoole\Client $client
      * @return mixed
      */
-    public function onError(swoole_client $client)
+    public function onError(SwooleClient $client)
     {
     }
 
     /**
-     * @param swoole_client $client
+     * @param \Swoole\Client $client
      * @return mixed
      */
-    public function onClose(swoole_client $client)
+    public function onClose(SwooleClient $client)
     {
     }
 
@@ -392,7 +392,7 @@ class Client
     {
         if (
             null !== $this->client
-            && $this->client instanceof swoole_client
+            && $this->client instanceof SwooleClient
             && $this->isConnected()
         ) {
             $this->close();

@@ -10,7 +10,7 @@
 namespace FastD\Swoole;
 
 
-use swoole_process;
+use Swoole\Process as SwooleProcess;
 
 /**
  * Process manager
@@ -26,12 +26,12 @@ class Process
     protected $server;
 
     /**
-     * @var swoole_process
+     * @var \Swoole\Process
      */
     protected $process;
 
     /**
-     * @var swoole_process[]
+     * @var \Swoole\Process[]
      */
     protected $processes = [];
 
@@ -77,7 +77,7 @@ class Process
 
         $this->callback = null === $callback ? [$this, 'handle'] : $callback;
 
-        $this->process = new swoole_process([$this, 'runProcess'], $redirect, $pipe);
+        $this->process = new SwooleProcess([$this, 'runProcess'], $redirect, $pipe);
     }
 
     /**
@@ -234,7 +234,7 @@ class Process
     }
 
     /**
-     * @return swoole_process[]
+     * @return \Swoole\Process[]
      */
     public function getChildProcesses()
     {
@@ -242,7 +242,7 @@ class Process
     }
 
     /**
-     * @return swoole_process
+     * @return \Swoole\Process
      */
     public function getProcess()
     {
@@ -252,16 +252,16 @@ class Process
     /**
      * Process handle
      *
-     * @param swoole_process $swoole_process
+     * @param \Swoole\Process $swoole_process
      * @return callable
      */
-    public function handle(swoole_process $swoole_process){}
+    public function handle(SwooleProcess $swoole_process){}
 
     /**
-     * @param swoole_process $worker
+     * @param \Swoole\Process $worker
      * @return void
      */
-    public function runProcess(swoole_process $worker)
+    public function runProcess(SwooleProcess $worker)
     {
         process_rename($this->name);
 

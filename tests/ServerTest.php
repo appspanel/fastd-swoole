@@ -11,17 +11,18 @@
 use FastD\Swoole\Server;
 use FastD\Swoole\Server\TCP;
 use PHPUnit\Framework\TestCase;
+use Swoole\Server as SwooleServer;
 
 class TcpServer extends TCP
 {
     /**
-     * @param swoole_server $server
+     * @param \Swoole\ $server
      * @param $fd
      * @param $data
      * @param $from_id
      * @return mixed
      */
-    public function doWork(swoole_server $server, $fd, $data, $from_id)
+    public function doWork(SwooleServer $server, $fd, $data, $from_id)
     {
         // TODO: Implement doWork() method.
     }

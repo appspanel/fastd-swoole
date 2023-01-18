@@ -10,11 +10,10 @@
 namespace FastD\Swoole\Server;
 
 use FastD\Swoole\Server;
-use swoole_server;
-use swoole_websocket_server;
-use swoole_http_request;
-use swoole_http_response;
-use swoole_websocket_frame;
+use Swoole\Server as SwooleServer;
+use Swoole\WebSocket\Server as SwooleWebSocketServer;
+use Swoole\Http\Request as SwooleRequest;
+use Swoole\WebSocket\Frame as SwooleFrame;
 
 /**
  * Class WebSocketServer
@@ -26,75 +25,75 @@ abstract class WebSocket extends Server
     protected $scheme = 'ws';
 
     /**
-     * @param swoole_websocket_server $server
-     * @param swoole_http_request $request
+     * @param \Swoole\WebSocket\Server $server
+     * @param \Swoole\Http\Request $request
      * @return mixed
      */
-    public function onOpen(swoole_websocket_server $server, swoole_http_request $request)
+    public function onOpen(SwooleWebSocketServer $server, SwooleRequest $request)
     {
         return $this->doOpen($server, $request);
     }
 
     /**
-     * @param swoole_websocket_server $server
-     * @param swoole_http_request $request
+     * @param \Swoole\WebSocket\Server $server
+     * @param \Swoole\Http\Request $request
      * @return mixed
      */
-    public function doOpen(swoole_websocket_server $server, swoole_http_request $request){}
+    public function doOpen(SwooleWebSocketServer $server, SwooleRequest $request){}
 
     /**
-     * @param swoole_server $server
-     * @param swoole_websocket_frame $frame
+     * @param \Swoole\Server $server
+     * @param \Swoole\WebSocket\Frame $frame
      * @return mixed
      */
-    public function onMessage(swoole_server $server, swoole_websocket_frame $frame)
+    public function onMessage(SwooleServer $server, SwooleFrame $frame)
     {
         return $this->doMessage($server, $frame);
     }
 
     /**
-     * @param swoole_server $server
-     * @param swoole_websocket_frame $frame
+     * @param \Swoole\Server $server
+     * @param \Swoole\WebSocket\Frame $frame
      * @return mixed
      */
-    abstract public function doMessage(swoole_server $server, swoole_websocket_frame $frame);
+    abstract public function doMessage(SwooleServer $server, SwooleFrame $frame);
 
     /**
-     * @return swoole_websocket_server
+     * @return \Swoole\WebSocket\Server
      */
     public function initSwoole()
     {
-        return new swoole_websocket_server($this->host, $this->port);
+        return new SwooleWebSocketServer($this->host, $this->port);
     }
 
     /**
-     * @param swoole_server $server
+     * @param \Swoole\Server $server
      * @param $data
      * @param $taskId
      * @param $workerId
      * @return mixed
      */
-    public function doTask(swoole_server $server, $data, $taskId, $workerId){}
+    public function doTask(SwooleServer $server, $data, $taskId, $workerId){}
 
     /**
-     * @param swoole_server $server
+     * @param \Swoole\Server $server
      * @param $data
      * @param $taskId
      * @return mixed
      */
-    public function doFinish(swoole_server $server, $data, $taskId){}
+    public function doFinish(SwooleServer $server, $data, $taskId){}
 
     /**
-     * @param swoole_server $server
+     * @param \Swoole\Server $server
      * @param $fd
      * @param $from_id
      */
-    public function doConnect(swoole_server $server, $fd, $from_id){}
+    public function doConnect(SwooleServer $server, $fd, $from_id){}
 
     /**
-     * @param swoole_server $server
+     * @param \Swoole\Server $server
      * @param $fd
      * @param $fromId
      */
-    public function doClose(swoole_server $server, $fd, $fromId){}
+    public function doClose(SwooleServer $server, $fd, $fromId){}
 }
