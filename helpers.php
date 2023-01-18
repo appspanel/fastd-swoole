@@ -7,17 +7,19 @@
  * @link      http://www.fast-d.cn/
  */
 
+use Swoole\Process;
+
 /**
  * @param $name
  */
-function process_rename ($name)
+function process_rename($name)
 {
     set_error_handler(function () {
     });
 
     if (function_exists('cli_set_process_title')) {
         cli_set_process_title($name);
-    } else if (function_exists('swoole_set_process_name')) {
+    } elseif (function_exists('swoole_set_process_name')) {
         swoole_set_process_name($name);
     }
 
@@ -33,7 +35,7 @@ function process_rename ($name)
  */
 function process_kill($pid, $signo = SIGTERM)
 {
-    return swoole_process::kill($pid, $signo);
+    return Process::kill($pid, $signo);
 }
 
 /**
@@ -42,7 +44,7 @@ function process_kill($pid, $signo = SIGTERM)
  */
 function process_wait($blocking = true)
 {
-    return swoole_process::wait($blocking);
+    return Process::wait($blocking);
 }
 
 /**
@@ -52,7 +54,7 @@ function process_wait($blocking = true)
  */
 function process_daemon($nochdir = true, $noclose = true)
 {
-    return swoole_process::daemon($nochdir, $noclose);
+    return Process::daemon($nochdir, $noclose);
 }
 
 /**
@@ -62,7 +64,7 @@ function process_daemon($nochdir = true, $noclose = true)
  */
 function process_signal($signo, callable $callback)
 {
-    return swoole_process::signal($signo, $callback);
+    return Process::signal($signo, $callback);
 }
 
 /**
@@ -72,7 +74,7 @@ function process_signal($signo, callable $callback)
  */
 function process_alarm($interval, $type = ITIMER_REAL)
 {
-    return swoole_process::alarm($interval, $type);
+    return Process::alarm($interval, $type);
 }
 
 /**
@@ -81,7 +83,7 @@ function process_alarm($interval, $type = ITIMER_REAL)
  */
 function process_affinity(array $cpus)
 {
-    return swoole_process::setaffinity($cpus);
+    return Process::setaffinity($cpus);
 }
 
 /**
