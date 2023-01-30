@@ -8,7 +8,6 @@
  */
 
 
-use FastD\Swoole\Server;
 use FastD\Swoole\Server\TCP;
 use PHPUnit\Framework\TestCase;
 use Swoole\Server as SwooleServer;
@@ -33,18 +32,19 @@ class ServerTest extends TestCase
     public function testNewServer()
     {
         $server = new TcpServer('foo', '127.0.0.1:9528');
+        $this->assertNull($server->getSwoole());
 
         $this->assertEquals('127.0.0.1', $server->getHost());
         $this->assertEquals('9528', $server->getPort());
         $this->assertEquals('foo', $server->getName());
         $this->assertEquals('/tmp/foo.pid', $server->getPidFile());
-        $this->assertNull($server->getSwoole());
     }
 
     public function testServerBootstrap()
     {
         $server = new TcpServer('foo', '127.0.0.1:9529');
         $this->assertNull($server->getSwoole());
+
         $server->daemon();
         $server->bootstrap();
         $this->assertEquals('127.0.0.1', $server->getSwoole()->host);
@@ -62,11 +62,14 @@ class ServerTest extends TestCase
 
     public function testServerBootstrapConfig()
     {
-        $server = new TcpServer('foo', 'tcp://127.0.0.1:9530', [
-            'pid_file' => '/tmp/foo.pid',
-        ]);
+        $server = new TcpServer('foo', 'tcp://127.0.0.1:9530', ['pid_file' => '/tmp/foo.pid',]);
+        $this->assertNull($server->getSwoole());
+
         $server->daemon();
         $server->bootstrap();
+        $this->assertEquals('127.0.0.1', $server->getSwoole()->host);
+        $this->assertEquals(9530, $server->getSwoole()->port);
+        $this->assertEquals('/tmp/foo.pid', $server->getPidFile());
         $this->assertEquals([
             'daemonize' => true,
             'pid_file' => '/tmp/foo.pid',
@@ -75,6 +78,5 @@ class ServerTest extends TestCase
             'worker_num' => 8,
             'open_cpu_affinity' => true,
         ], $server->getSwoole()->setting);
-        $this->assertEquals('/tmp/foo.pid', $server->getPidFile());
     }
 }

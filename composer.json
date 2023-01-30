@@ -11,13 +11,13 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "php": "^8.0",
+        "php": ">=7.4",
         "fastd/packet": "^1.4",
-        "fastd/http": "^3.0",
-        "symfony/console": "^6.0"
+        "fastd/http": "^3.1",
+        "symfony/console": "5.4.*"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.3"
+        "phpunit/phpunit": "^9.5"
     },
     "autoload": {
         "psr-4": {
@@ -30,5 +30,12 @@
     "suggests": {
         "ext-swoole": "Allow php swoole extension.",
         "ext-inotify": "Allow php inotify extension."
-    }
+    },
+    "repositories": [
+        {
+            "name": "fastd/http",
+            "type": "vcs",
+            "url": "https://github.com/appspanel/fastd-http.git"
+        }
+    ]
 }
