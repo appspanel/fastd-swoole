@@ -16,13 +16,13 @@ include __DIR__ . '/../../vendor/autoload.php';
  */
 class DemoServer extends TCP
 {
-    public function doConnect(swoole_server $server, $fd, $from_id)
+    public function doConnect(swoole_server $server, $fd, $reactorId)
     {
-        parent::doConnect($server, $fd, $from_id);
+        parent::doConnect($server, $fd, $reactorId);
         $server->send($fd, 'connect');
     }
 
-    public function doWork(swoole_server $server, $fd, $data, $from_id)
+    public function doWork(swoole_server $server, $fd, $data, $reactorId)
     {
         echo $fd;
         echo $data . PHP_EOL;

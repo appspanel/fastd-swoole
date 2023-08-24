@@ -9,8 +9,9 @@
 
 namespace FastD\Swoole\AsyncIO;
 
-
 use SplFileObject;
+use function swoole_async_read;
+use function swoole_async_write;
 
 /**
  * Class File
@@ -41,7 +42,7 @@ class File extends SplFileObject
      */
     public function write($content, $offset = -1)
     {
-        return \swoole_async_write($this->getFilename(), $content, $offset, [$this, 'doWrite']);
+        return swoole_async_write($this->getFilename(), $content, $offset, [$this, 'doWrite']);
     }
 
     /**
@@ -50,7 +51,7 @@ class File extends SplFileObject
      */
     public function read($size = 8192, $offset = 0)
     {
-        \swoole_async_read($this->getFilename(), [$this, 'doRead'], $size, $offset);
+        swoole_async_read($this->getFilename(), [$this, 'doRead'], $size, $offset);
     }
 
     /**

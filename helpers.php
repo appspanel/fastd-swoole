@@ -155,10 +155,10 @@ function process_is_running($keyword)
 }
 
 /**
- * @param $port
+ * @param int $port
  * @return bool
  */
-function port_is_running($port)
+function port_is_running(int $port)
 {
     $command = "lsof -i:{$port} | grep LISTEN";
 

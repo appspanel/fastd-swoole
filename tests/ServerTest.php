@@ -7,7 +7,6 @@
  * @link      http://www.fast-d.cn/
  */
 
-
 use FastD\Swoole\Server\TCP;
 use PHPUnit\Framework\TestCase;
 use Swoole\Server as SwooleServer;
@@ -15,15 +14,15 @@ use Swoole\Server as SwooleServer;
 class TcpServer extends TCP
 {
     /**
-     * @param \Swoole\ $server
-     * @param $fd
-     * @param $data
-     * @param $from_id
+     * @param \Swoole\Server $server
+     * @param int $fd
+     * @param mixed $data
+     * @param int $reactorId
      * @return mixed
      */
-    public function doWork(SwooleServer $server, $fd, $data, $from_id)
+    public function doWork(SwooleServer $server, int $fd, mixed $data, int $reactorId): mixed
     {
-        // TODO: Implement doWork() method.
+        return null;
     }
 }
 
@@ -53,11 +52,11 @@ class ServerTest extends TestCase
         $this->assertEquals(9529, $server->getSwoole()->port);
         $this->assertEquals('/tmp/bar.pid', $server->getPidFile());
         $this->assertEquals([
-            'daemonize' => true,
-            'task_worker_num' => 8,
-            'task_tmpdir' => '/tmp',
-            'pid_file' => '/tmp/bar.pid',
-            'worker_num' => 8,
+            'daemonize'         => true,
+            'task_worker_num'   => 8,
+            'task_tmpdir'       => '/tmp',
+            'pid_file'          => '/tmp/bar.pid',
+            'worker_num'        => 8,
             'open_cpu_affinity' => true,
         ], $server->getSwoole()->setting);
 
@@ -75,11 +74,11 @@ class ServerTest extends TestCase
         $this->assertEquals(9530, $server->getSwoole()->port);
         $this->assertEquals('/tmp/baz.pid', $server->getPidFile());
         $this->assertEquals([
-            'daemonize' => true,
-            'pid_file' => '/tmp/baz.pid',
-            'task_worker_num' => 8,
-            'task_tmpdir' => '/tmp',
-            'worker_num' => 8,
+            'daemonize'         => true,
+            'task_worker_num'   => 8,
+            'task_tmpdir'       => '/tmp',
+            'pid_file'          => '/tmp/baz.pid',
+            'worker_num'        => 8,
             'open_cpu_affinity' => true,
         ], $server->getSwoole()->setting);
 

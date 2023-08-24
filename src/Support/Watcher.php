@@ -9,9 +9,12 @@
 
 namespace FastD\Swoole\Support;
 
-
+use Closure;
+use RuntimeException;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
+use function swoole_event_add;
+use function swoole_event_wait;
 
 /**
  * Class Watcher
@@ -84,12 +87,12 @@ class Watcher
      * @return Watcher
      * @throws \RuntimeException
      */
-    public function watch(array $directories, \Closure $callback = null)
+    public function watch(array $directories, Closure $callback = null)
     {
         foreach ($directories as $directory) {
             if (!is_dir($directory)) {
                 $this->clearWatch();
-                throw new \RuntimeException("[$directory] is not a directory.");
+                throw new RuntimeException("[$directory] is not a directory.");
             }
 
             $wd = inotify_add_watch($this->inotify, $directory, $this->events);
@@ -100,7 +103,7 @@ class Watcher
         $this->callback = $callback;
 
         // Listen modify.
-        \swoole_event_add($this->inotify, function () use ($callback) {
+        swoole_event_add($this->inotify, function () use ($callback) {
             $events = inotify_read($this->inotify);
             if (!$events) {
                 return;
@@ -132,6 +135,6 @@ class Watcher
      */
     public function run()
     {
-        \swoole_event_wait();
+        swoole_event_wait();
     }
 }

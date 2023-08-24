@@ -9,7 +9,6 @@
 
 namespace FastD\Swoole;
 
-
 use Swoole\Process as SwooleProcess;
 
 /**

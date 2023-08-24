@@ -9,16 +9,17 @@
 
 namespace FastD\Swoole\Server;
 
-use Exception;
 use FastD\Http\HttpException;
 use FastD\Http\Response;
 use FastD\Http\SwooleServerRequest;
 use FastD\Swoole\Server;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Swoole\Http\Request as SwooleRequest;
 use Swoole\Http\Response as SwooleResponse;
 use Swoole\Http\Server as SwooleHttpServer;
 use Swoole\Server as SwooleServer;
+use Throwable;
 
 /**
  * Class HttpServer
@@ -34,7 +35,7 @@ abstract class HTTP extends Server
     /**
      * @return \Swoole\Http\Server
      */
-    public function initSwoole()
+    public function initSwoole(): SwooleServer
     {
         return new SwooleHttpServer($this->getHost(), $this->getPort());
     }
@@ -43,7 +44,7 @@ abstract class HTTP extends Server
      * @param \Swoole\Http\Request $swooleRequet
      * @param \Swoole\Http\Response $swooleResponse
      */
-    public function onRequest(SwooleRequest $swooleRequet, SwooleResponse $swooleResponse)
+    public function onRequest(SwooleRequest $swooleRequet, SwooleResponse $swooleResponse): void
     {
         try {
             $swooleRequestServer = SwooleServerRequest::createServerRequestFromSwoole($swooleRequet);
@@ -55,7 +56,7 @@ abstract class HTTP extends Server
         } catch (HttpException $e) {
             $swooleResponse->status($e->getStatusCode());
             $swooleResponse->end($e->getMessage());
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $swooleResponse->status(500);
             $swooleResponse->end(static::SERVER_INTERVAL_ERROR);
         }
@@ -63,9 +64,9 @@ abstract class HTTP extends Server
 
     /**
      * @param \Swoole\Http\Response $swooleResponse
-     * @param Response $response
+     * @param \FastD\Http\Response $response
      */
-    protected function sendHeader(SwooleResponse $swooleResponse, Response $response)
+    protected function sendHeader(SwooleResponse $swooleResponse, Response $response): void
     {
         foreach ($response->getHeaders() as $key => $header) {
             $swooleResponse->header($key, $response->getHeaderLine($key));
@@ -77,39 +78,49 @@ abstract class HTTP extends Server
     }
 
     /**
-     * @param ServerRequestInterface $serverRequest
-     * @return Response
+     * @param \Psr\Http\Message\ServerRequestInterface $serverRequest
+     * @return \Psr\Http\Message\ResponseInterface
      */
-    abstract public function doRequest(ServerRequestInterface $serverRequest);
+    abstract public function doRequest(ServerRequestInterface $serverRequest): ResponseInterface;
 
     /**
      * @param \Swoole\Server $server
-     * @param $data
-     * @param $taskId
-     * @param $workerId
+     * @param mixed $data
+     * @param int $taskId
+     * @param int $workerId
      * @return mixed
      */
-    public function doTask(SwooleServer $server, $data, $taskId, $workerId){}
+    public function doTask(SwooleServer $server, mixed $data, int $taskId, int $workerId): mixed
+    {
+        return null;
+    }
 
     /**
      * @param \Swoole\Server $server
-     * @param $data
-     * @param $taskId
+     * @param mixed $data
+     * @param int $taskId
      * @return mixed
      */
-    public function doFinish(SwooleServer $server, $data, $taskId){}
+    public function doFinish(SwooleServer $server, mixed $data, int $taskId): mixed
+    {
+        return null;
+    }
 
     /**
      * @param \Swoole\Server $server
-     * @param $fd
-     * @param $from_id
+     * @param int $fd
+     * @param int $reactorId
      */
-    public function doConnect(SwooleServer $server, $fd, $from_id){}
+    public function doConnect(SwooleServer $server, int $fd, int $reactorId): void
+    {
+    }
 
     /**
      * @param \Swoole\Server $server
-     * @param $fd
-     * @param $fromId
+     * @param int $fd
+     * @param int $reactorId
      */
-    public function doClose(SwooleServer $server, $fd, $fromId){}
+    public function doClose(SwooleServer $server, int $fd, int $reactorId): void
+    {
+    }
 }

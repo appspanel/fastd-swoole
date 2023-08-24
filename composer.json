@@ -11,7 +11,7 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "php": ">=7.4",
+        "php": ">=8.0",
         "fastd/packet": "^1.4",
         "fastd/http": "^3.1",
         "symfony/console": "6.3.*"

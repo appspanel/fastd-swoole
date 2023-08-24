@@ -9,10 +9,13 @@
 
 namespace FastD\Swoole\Server;
 
-
 use FastD\Swoole\Server;
 
+/**
+ * Class Unix
+ *
+ * @package FastD\Swoole\Server
+ */
 abstract class Unix extends Server
 {
-
 }

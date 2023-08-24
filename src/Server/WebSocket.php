@@ -22,31 +22,31 @@ use Swoole\WebSocket\Frame as SwooleFrame;
  */
 abstract class WebSocket extends Server
 {
-    protected $scheme = 'ws';
+    protected string $scheme = 'ws';
 
     /**
      * @param \Swoole\WebSocket\Server $server
      * @param \Swoole\Http\Request $request
-     * @return mixed
      */
-    public function onOpen(SwooleWebSocketServer $server, SwooleRequest $request)
+    public function onOpen(SwooleWebSocketServer $server, SwooleRequest $request): void
     {
-        return $this->doOpen($server, $request);
+        $this->doOpen($server, $request);
     }
 
     /**
      * @param \Swoole\WebSocket\Server $server
      * @param \Swoole\Http\Request $request
-     * @return mixed
      */
-    public function doOpen(SwooleWebSocketServer $server, SwooleRequest $request){}
+    public function doOpen(SwooleWebSocketServer $server, SwooleRequest $request): void
+    {
+    }
 
     /**
      * @param \Swoole\Server $server
      * @param \Swoole\WebSocket\Frame $frame
      * @return mixed
      */
-    public function onMessage(SwooleServer $server, SwooleFrame $frame)
+    public function onMessage(SwooleServer $server, SwooleFrame $frame): mixed
     {
         return $this->doMessage($server, $frame);
     }
@@ -56,44 +56,54 @@ abstract class WebSocket extends Server
      * @param \Swoole\WebSocket\Frame $frame
      * @return mixed
      */
-    abstract public function doMessage(SwooleServer $server, SwooleFrame $frame);
+    abstract public function doMessage(SwooleServer $server, SwooleFrame $frame): mixed;
 
     /**
      * @return \Swoole\WebSocket\Server
      */
-    public function initSwoole()
+    public function initSwoole(): SwooleServer
     {
         return new SwooleWebSocketServer($this->host, $this->port);
     }
 
     /**
      * @param \Swoole\Server $server
-     * @param $data
-     * @param $taskId
-     * @param $workerId
+     * @param mixed $data
+     * @param int $taskId
+     * @param int $workerId
      * @return mixed
      */
-    public function doTask(SwooleServer $server, $data, $taskId, $workerId){}
+    public function doTask(SwooleServer $server, mixed $data, int $taskId, int $workerId): mixed
+    {
+        return null;
+    }
 
     /**
      * @param \Swoole\Server $server
-     * @param $data
-     * @param $taskId
+     * @param mixed $data
+     * @param int $taskId
      * @return mixed
      */
-    public function doFinish(SwooleServer $server, $data, $taskId){}
+    public function doFinish(SwooleServer $server, mixed $data, int $taskId): mixed
+    {
+        return null;
+    }
 
     /**
      * @param \Swoole\Server $server
-     * @param $fd
-     * @param $from_id
+     * @param int $fd
+     * @param int $reactorId
      */
-    public function doConnect(SwooleServer $server, $fd, $from_id){}
+    public function doConnect(SwooleServer $server, int $fd, int $reactorId): void
+    {
+    }
 
     /**
      * @param \Swoole\Server $server
-     * @param $fd
-     * @param $fromId
+     * @param int $fd
+     * @param int $reactorId
      */
-    public function doClose(SwooleServer $server, $fd, $fromId){}
+    public function doClose(SwooleServer $server, int $fd, int $reactorId): void
+    {
+    }
 }

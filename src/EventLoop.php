@@ -9,8 +9,12 @@
 
 namespace FastD\Swoole;
 
-
 use FastD\Swoole\AsyncIO\Event;
+use function swoole_event_add;
+use function swoole_event_del;
+use function swoole_event_exit;
+use function swoole_event_set;
+use function swoole_event_write;
 
 /**
  * Class EventLoop
@@ -30,14 +34,14 @@ class EventLoop
     {
         $key = spl_object_hash($eventAbstract);
         if (isset($this->events[$key])) {
-            \swoole_event_set(
+            swoole_event_set(
                 $eventAbstract->getResource(),
                 [$eventAbstract, 'onRead'],
                 [$eventAbstract, 'doWrite'],
                 $eventAbstract->getFlag()
             );
         } else {
-            \swoole_event_add(
+            swoole_event_add(
                 $eventAbstract->getResource(),
                 [$eventAbstract, 'onRead'],
                 [$eventAbstract, 'doWrite'],
@@ -53,7 +57,7 @@ class EventLoop
      */
     public function remove(Event $eventAbstract)
     {
-        \swoole_event_del($eventAbstract->getResource());
+        swoole_event_del($eventAbstract->getResource());
 
         unset($this->events[spl_object_hash($eventAbstract)]);
         if (empty($this->events)) {
@@ -66,7 +70,7 @@ class EventLoop
      */
     public function exit()
     {
-        \swoole_event_exit();
+        swoole_event_exit();
     }
 
     /**
@@ -76,6 +80,6 @@ class EventLoop
      */
     public function write(Event $eventAbstract, $data)
     {
-        return \swoole_event_write($eventAbstract->getResource(), $data);
+        return swoole_event_write($eventAbstract->getResource(), $data);
     }
 }

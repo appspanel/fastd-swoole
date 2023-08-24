@@ -9,7 +9,6 @@
 
 namespace FastD\Swoole;
 
-
 /**
  * Class Queue
  * @package FastD\Swoole

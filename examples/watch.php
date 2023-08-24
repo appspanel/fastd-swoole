@@ -15,10 +15,10 @@ class DemoServer extends \FastD\Swoole\Server\Tcp
      * @param swoole_server $server
      * @param $fd
      * @param $data
-     * @param $from_id
+     * @param $reactorId
      * @return mixed
      */
-    public function doWork(swoole_server $server, $fd, $data, $from_id)
+    public function doWork(swoole_server $server, $fd, $data, $reactorId)
     {
         return 'hello tcp';
     }

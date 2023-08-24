@@ -11,6 +11,7 @@ namespace FastD\Swoole\Server;
 
 use FastD\Swoole\Server;
 use Swoole\Server as SwooleServer;
+use Throwable;
 
 /**
  * Class Udp
@@ -27,13 +28,12 @@ abstract class UDP extends Server
      * @param \Swoole\Server $server
      * @param string $data
      * @param array $clientInfo
-     * @return void
      */
-    public function onPacket(SwooleServer $server, $data, array $clientInfo)
+    public function onPacket(SwooleServer $server, string $data, array $clientInfo): void
     {
         try {
             $this->doPacket($server, $data, $clientInfo);
-        } catch (\Exception $e) {
+        } catch (Throwable $e) {
             $content = sprintf("Error: %s\nFile: %s \n Code: %s",
                 $e->getMessage(),
                 $e->getFile(),
@@ -45,40 +45,50 @@ abstract class UDP extends Server
 
     /**
      * @param \Swoole\Server $server
-     * @param $data
-     * @param $clientInfo
+     * @param string $data
+     * @param array $clientInfo
      * @return mixed
      */
-    abstract public function doPacket(SwooleServer $server, $data, $clientInfo);
+    abstract public function doPacket(SwooleServer $server, string $data, array $clientInfo): mixed;
+
+    /**
+     * @param \Swoole\Server $server
+     * @param mixed $data
+     * @param int $taskId
+     * @param int $workerId
+     * @return mixed
+     */
+    public function doTask(SwooleServer $server, mixed $data, int $taskId, int $workerId): mixed
+    {
+        return null;
+    }
 
     /**
      * @param \Swoole\Server $server
      * @param $data
-     * @param $taskId
-     * @param $workerId
+     * @param int $taskId
      * @return mixed
      */
-    public function doTask(SwooleServer $server, $data, $taskId, $workerId){}
+    public function doFinish(SwooleServer $server, $data, int $taskId): mixed
+    {
+        return null;
+    }
 
     /**
      * @param \Swoole\Server $server
-     * @param $data
-     * @param $taskId
-     * @return mixed
+     * @param int $fd
+     * @param int $reactorId
      */
-    public function doFinish(SwooleServer $server, $data, $taskId){}
+    public function doConnect(SwooleServer $server, int $fd, int $reactorId): void
+    {
+    }
 
     /**
      * @param \Swoole\Server $server
-     * @param $fd
-     * @param $from_id
+     * @param int $fd
+     * @param int $reactorId
      */
-    public function doConnect(SwooleServer $server, $fd, $from_id){}
-
-    /**
-     * @param \Swoole\Server $server
-     * @param $fd
-     * @param $fromId
-     */
-    public function doClose(SwooleServer $server, $fd, $fromId){}
+    public function doClose(SwooleServer $server, int $fd, int $reactorId): void
+    {
+    }
 }

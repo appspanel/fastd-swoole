@@ -9,7 +9,6 @@
 
 namespace FastD\Swoole\AsyncIO;
 
-
 use FastD\Swoole\EventLoop;
 
 /**

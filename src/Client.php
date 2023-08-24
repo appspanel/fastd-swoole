@@ -9,7 +9,6 @@
 
 namespace FastD\Swoole;
 
-
 use FastD\Http\Cookie;
 use LogicException;
 use RuntimeException;
