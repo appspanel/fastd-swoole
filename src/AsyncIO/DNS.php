@@ -34,7 +34,6 @@ class DNS
     public function __construct($host, array $options = [])
     {
         $this->host = $host;
-
         $this->options = $options;
     }
 
@@ -51,5 +50,7 @@ class DNS
      * @param $host
      * @param $ip
      */
-    public function doLookup($host, $ip) {}
+    public function doLookup($host, $ip)
+    {
+    }
 }

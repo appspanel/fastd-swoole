@@ -43,7 +43,7 @@ abstract class Server
     /**
      * Swoole server run configuration.
      *
-     * @var array
+     * @var array<string,mixed>
      */
     protected array $config = [
         'worker_num' => 8,
@@ -105,7 +105,7 @@ abstract class Server
      * Server constructor.
      * @param string $name
      * @param string|null $address
-     * @param array $config
+     * @param array<string,mixed> $config
      * @param OutputInterface|null $output
      */
     public function __construct(string $name, ?string $address = null, array $config = [], ?OutputInterface $output = null)
@@ -280,7 +280,7 @@ abstract class Server
             $isListenerPort = true;
         }
         foreach ($handles as $value) {
-            if ('on' == substr($value, 0, 2)) {
+            if (str_starts_with($value, 'on')) {
                 if ($isListenerPort) {
                     if ('udp' === $this->getScheme()) {
                         $callbacks = ['onPacket',];
@@ -367,12 +367,12 @@ abstract class Server
     }
 
     /**
-     * @param $name
-     * @param $address
-     * @param $config
+     * @param string $name
+     * @param string|null $address
+     * @param array<string,mixed> $config
      * @return static
      */
-    public static function createServer($name, $address, array $config = [])
+    public static function createServer(string $name, ?string $address = null, array $config = []): Server
     {
         return new static($name, $address, $config);
     }
@@ -604,22 +604,22 @@ abstract class Server
 
     /**
      * @param \Swoole\Server $server
-     * @param int $worker_id
+     * @param int $workerId
      */
-    public function onWorkerStart(SwooleServer $server, int $worker_id): void
+    public function onWorkerStart(SwooleServer $server, int $workerId): void
     {
-        $worker_name = $server->taskworker ? 'task' : 'worker';
-        process_rename($this->getName() . ' ' . $worker_name);
-        $this->output->write(sprintf('Server %s[<info>%s</info>] is started [<info>%s</info>]', ucfirst($worker_name), $server->worker_pid, $worker_id) . PHP_EOL);
+        $workerName = $server->taskworker ? 'task' : 'worker';
+        process_rename($this->getName() . ' ' . $workerName);
+        $this->output->write(sprintf('Server %s[<info>%s</info>] is started [<info>%s</info>]', ucfirst($workerName), $server->worker_pid, $workerId).PHP_EOL);
     }
 
     /**
      * @param \Swoole\Server $server
-     * @param int $worker_id
+     * @param int $workerId
      */
-    public function onWorkerStop(SwooleServer $server, int $worker_id): void
+    public function onWorkerStop(SwooleServer $server, int $workerId): void
     {
-        $this->output->writeln(sprintf('Server <info>%s</info> Worker[<info>%s</info>] is shutdown', $this->name, $worker_id), OutputInterface::VERBOSITY_DEBUG);
+        $this->output->writeln(sprintf('Server <info>%s</info> Worker[<info>%s</info>] is shutdown', $this->name, $workerId), OutputInterface::VERBOSITY_DEBUG);
     }
 
     /**

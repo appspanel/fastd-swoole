@@ -10,7 +10,6 @@
 namespace FastD\Swoole\Server;
 
 use FastD\Http\HttpException;
-use FastD\Http\Response;
 use FastD\Http\SwooleServerRequest;
 use FastD\Swoole\Server;
 use Psr\Http\Message\ResponseInterface;
@@ -41,14 +40,14 @@ abstract class HTTP extends Server
     }
 
     /**
-     * @param \Swoole\Http\Request $swooleRequet
+     * @param \Swoole\Http\Request $swooleRequest
      * @param \Swoole\Http\Response $swooleResponse
      */
-    public function onRequest(SwooleRequest $swooleRequet, SwooleResponse $swooleResponse): void
+    public function onRequest(SwooleRequest $swooleRequest, SwooleResponse $swooleResponse): void
     {
         try {
-            $swooleRequestServer = SwooleServerRequest::createServerRequestFromSwoole($swooleRequet);
-            $response = $this->doRequest($swooleRequestServer);
+            $swooleServerRequest = SwooleServerRequest::createServerRequestFromSwoole($swooleRequest);
+            $response = $this->doRequest($swooleServerRequest);
             $this->sendHeader($swooleResponse, $response);
             $swooleResponse->status($response->getStatusCode());
             $swooleResponse->end((string) $response->getBody());
@@ -56,7 +55,7 @@ abstract class HTTP extends Server
         } catch (HttpException $e) {
             $swooleResponse->status($e->getStatusCode());
             $swooleResponse->end($e->getMessage());
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             $swooleResponse->status(500);
             $swooleResponse->end(static::SERVER_INTERVAL_ERROR);
         }
@@ -66,7 +65,7 @@ abstract class HTTP extends Server
      * @param \Swoole\Http\Response $swooleResponse
      * @param \FastD\Http\Response $response
      */
-    protected function sendHeader(SwooleResponse $swooleResponse, Response $response): void
+    protected function sendHeader(SwooleResponse $swooleResponse, ResponseInterface $response): void
     {
         foreach ($response->getHeaders() as $key => $header) {
             $swooleResponse->header($key, $response->getHeaderLine($key));
